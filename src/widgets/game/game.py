@@ -88,6 +88,8 @@ class GameLibraryCard(MDCard, BorderBehavior):
         
         self.game_name = str(game_torrent.name).split("-")[0]
         self.game_obj = self.query_game(self.game_name)
+        if self.game_obj is None:
+            return
         
         self.torr = None
         self.magnet = game_torrent.magnet_uri
@@ -186,7 +188,11 @@ class GameLibraryCard(MDCard, BorderBehavior):
         partial_name = name.split(" ")
         partial_name = partial_name[:len(partial_name)//2]
         partial_name = " ".join(partial_name)
-        return db.get_library_game(partial_name)[0]
+        result_list = db.get_library_game(partial_name)
+        if len(result_list) == 0:
+            return None
+        else: 
+            return result_list[0]
     
     def delete(self, magnet):
         self.clock.cancel()

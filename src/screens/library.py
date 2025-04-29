@@ -35,7 +35,7 @@ class Library(Plugin):
         torrs = self.qbt_client.get_torrents()
         for game in torrs:
             gameCard = GameLibraryCard(game_torrent=game, qbt_client=self.qbt_client)
-            if getattr(instance, "text", "").lower() in gameCard.game_name.lower():
+            if gameCard.game_obj and getattr(instance, "text", "").lower() in gameCard.game_name.lower():
                 self.gamelist.add_game(gameCard)
             else:
                 gameCard = None

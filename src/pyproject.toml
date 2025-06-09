@@ -17,6 +17,7 @@ pandas = "^2.2.3"
 requests = "^2.31.0"
 lxml = "^4.9.3"
 qbittorrent-api = "^2023.7.52"
+unidecode = "^1.4.0"
 
 
 [build-system]

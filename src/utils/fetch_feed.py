@@ -5,6 +5,7 @@ from igdb.wrapper import IGDBWrapper
 import os
 import numpy as np
 import time
+import unidecode
 
 
 class ReleasesFeed:
@@ -72,11 +73,14 @@ class ReleasesFeed:
         time.sleep(2)
         
         # JSON API request
-        byte_array = self.igdb_wrapper.api_request(
-            "games", f'search "{game}"; fields cover, summary; offset 0;'
-        )
+        try:
+            byte_array = self.igdb_wrapper.api_request(
+                "games", f'search "{unidecode.unidecode(game)}"; fields cover, summary; offset 0;'
+            )
         # parse into JSON however you like...
-
+        except:
+            print(game)
+            return
         data = json.loads(byte_array)
         #print(data)
 

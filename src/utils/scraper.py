@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 from igdb.wrapper import IGDBWrapper
+
+from utils.fetch_feed import NO_COVER
 from .thread_with_return import ThreadWithReturnValue
 import time
 import os
@@ -239,7 +241,7 @@ class JohnCena141Scraper:
         #print(data)
 
         if len(data) == 0:
-            return "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/nocover.png", "No summary available"
+            return NO_COVER, "No summary available"
         
         try:
             cover_id = int(data[0]["cover"])
@@ -250,7 +252,7 @@ class JohnCena141Scraper:
                 cover_id = int(data[1]["cover"])
                 game_summary = data[1]["summary"]
             except Exception:
-                return "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/nocover.png", "No summary available"        
+                return NO_COVER, "No summary available"        
         
         # cover url 
         byte_array = wrapper.api_request(

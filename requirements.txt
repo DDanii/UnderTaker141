@@ -9,3 +9,4 @@ lxml==4.9.3
 qbittorrent-api==2024.9.67
 certifi
 unidecode
+PyGithub

@@ -1,3 +1,4 @@
+import glob
 from kivymd.uix.label import MDLabel
 from kivymd.uix.card import MDCard
 from kivy.uix.image import AsyncImage
@@ -10,11 +11,13 @@ from kivymd.uix.screenmanager import MDScreenManager
 
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
+from database.database import GamesInfo
 from utils import get_settings
 from database import Database
 import os
 import html
 
+from utils.fetch_feed import NO_COVER
 from widgets.border import BorderBehavior
 
 
@@ -88,11 +91,17 @@ class GameLibraryCard(MDCard, BorderBehavior):
         
         self.game_name = str(game_torrent.name).split("-")[0]
         self.game_obj = self.query_game(self.game_name)
+        self.save_path = game_torrent.content_path
+        if self.game_obj is None:
+            if self.is_launchable():
+                self.game_obj = GamesInfo(self.game_name, NO_COVER, "")
+            else:
+                return
+
         
         self.torr = None
         self.magnet = game_torrent.magnet_uri
         self.cover_link = self.game_obj.cover
-        self.save_path = game_torrent.content_path
         self.status = game_torrent.state
         
         self.orientation = "vertical"
@@ -166,6 +175,9 @@ class GameLibraryCard(MDCard, BorderBehavior):
     
     def launch_game(self, instance):
         os.system(f"cd {self.save_path} && chmod +x start* && ./start* &")
+
+    def is_launchable(self) -> bool:
+        return len(glob.glob(f"{self.save_path}/start*")) > 1
         
     def open_location(self, instance):
         os.system(f"xdg-open {self.save_path} &")
@@ -186,7 +198,11 @@ class GameLibraryCard(MDCard, BorderBehavior):
         partial_name = name.split(" ")
         partial_name = partial_name[:len(partial_name)//2]
         partial_name = " ".join(partial_name)
-        return db.get_library_game(partial_name)[0]
+        result_list = db.get_library_game(partial_name)
+        if len(result_list) == 0:
+            return None
+        else: 
+            return result_list[0]
     
     def delete(self, magnet):
         self.clock.cancel()

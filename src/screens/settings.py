@@ -75,17 +75,17 @@ class Settings(Plugin):
         
         
     def update_db(self, instance):
-        
-        instance.text = "It will take a while, please wait..."
         instance.disabled = True
+
+        t = Thread(target=self.update_db_helper, args={instance})
+        t.start()
         
-        
-        
-        #from utils import JohnCena141Scraper
-        #scraper = JohnCena141Scraper("cc", self.settings_yaml["igdb"]["twitch_client_id"], self.settings_yaml["igdb"]["twitch_client_secret"], db)
-        #scraper.run()
+    def update_db_helper(self, instance):
         from utils import ReleasesFeed
+        
         updater = ReleasesFeed(twitch_client_id=self.settings_yaml["igdb"]["twitch_client_id"], twitch_client_secret=self.settings_yaml["igdb"]["twitch_client_secret"], db_object=db)
         t = Thread(target=updater.pipeline)
         t.start()
         instance.text = "Database is being updated, please DO NOT close the application."
+        t.join()
+        instance.text = "Database update done"
